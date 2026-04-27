@@ -1309,9 +1309,9 @@ class ClaudeMessagesWrapper(LanguageModelWrapper):
 
         """
 
-        raise NotImplementedError(
-            "ClaudeMessagesWrapper does not support text completion."
-        )
+        pass
+
+
 
 
 class StreamingClaudeMessagesWrapper(StreamingLanguageModelWrapper):
@@ -1409,9 +1409,9 @@ class StreamingClaudeMessagesWrapper(StreamingLanguageModelWrapper):
 
         """
 
-        raise NotImplementedError(
-            "ClaudeMessagesWrapper does not support text completion."
-        )
+        pass
+
+
 
 
 class ClaudeWrapper(LanguageModelWrapper):
