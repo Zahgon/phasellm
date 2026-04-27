@@ -101,9 +101,7 @@ class OpenAIConfiguration(APIConfiguration):
             A Dict of the base API kwargs for the OpenAI API configuration.
 
         """
-        return {
-            'model': self.model
-        }
+        pass
 
 
 class AzureAPIConfiguration(APIConfiguration):
@@ -173,9 +171,7 @@ class AzureAPIConfiguration(APIConfiguration):
             A Dict of the base API kwargs for the Azure API configuration.
 
         """
-        return {
-            'model': self.deployment_id
-        }
+        pass
 
 
 class AzureActiveDirectoryConfiguration:
@@ -246,9 +242,7 @@ class AzureActiveDirectoryConfiguration:
             A Dict containing the base API kwargs for the Azure Active Directory API configuration.
 
         """
-        return {
-            'deployment_id': self.deployment_id
-        }
+        pass
 
 
 class VertexAIConfiguration(APIConfiguration):
@@ -301,5 +295,3 @@ class VertexAIConfiguration(APIConfiguration):
         else:
             self.client = GenerativeModel(self.model)
 
-    def get_base_api_kwargs(self):
-        return {}

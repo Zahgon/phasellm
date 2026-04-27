@@ -25,20 +25,7 @@ def simulate_n_chat_simulations(chatbot: ChatBot, n: int, out_path_excel: Option
         A list of messages representing the responses in the chat.
 
     """
-
-    original_chat_messages = chatbot.messages.copy()
-    responses = []
-
-    for i in range(0, n):
-        r = chatbot.resend()
-        responses.append(r)
-        chatbot.messages = original_chat_messages.copy()
-
-    if out_path_excel:
-        df = pd.DataFrame({'responses': responses})
-        df.to_excel(out_path_excel, sheet_name='responses', index=False)
-
-    return responses
+    pass
 
 
 class BinaryPreference:
@@ -67,13 +54,13 @@ class BinaryPreference:
         """
         Set the preference of the class.
         """
-        self.preference = pref
+        pass
 
     def get_preference(self):
         """
         Get the preference of the class.
         """
-        return self.preference
+        pass
 
 
 class EvaluationStream:
@@ -104,8 +91,7 @@ class EvaluationStream:
         """
         Shows both sets of options for review and tracks the result.
         """
-        pref = self.evaluator.choose(self.objective, self.prompt, response1, response2)
-        self.prefs[pref - 1] += 1
+        pass
 
 
 class HumanEvaluatorCommandLine():
@@ -119,38 +105,6 @@ class HumanEvaluatorCommandLine():
     def __repr__(self):
         return "<HumanEvaluatorCommandLine>"
 
-    def choose(self, objective, prompt, response1, response2):
-        response_map = {"A": 1, "B": 2}
-        response_a = response1
-        response_b = response2
-        if random.random() <= 0.5:
-            response_map = {"A": 2, "B": 1}
-            response_a = response2
-            response_b = response1
-
-        output_string = f"""OBJECTIVE: {objective}
-
-PROMPT: {prompt}
-
---------------------        
-RESPONSE 'A':
-{response_a}
-
---------------------
-RESPONSE 'B':
-{response_b}
-
---------------------
-        """
-
-        print(output_string)
-        user_input = ""
-        user_input = input()
-        if user_input not in ["A", "B"]:
-            print("Please put in 'A' or 'B' to tell us which is the better response.")
-            user_input = input()
-
-        return response_map[user_input]
 
 
 class GPTEvaluator:
@@ -182,43 +136,4 @@ class GPTEvaluator:
             1 if response1 is preferred, 2 if response2 is preferred.
 
         """
-
-        response_map = {"A": 1, "B": 2}
-        response_a = response1
-        response_b = response2
-        if random.random() <= 0.5:
-            response_map = {"A": 2, "B": 1}
-            response_a = response2
-            response_b = response1
-
-        prompt = f"""We would like your feedback on a large language model we are building. Specifically, we would like you to compare two different LLM responses and let us know which one is better.
-
-Our objective for the LLM is:
-{objective}
-
-The prompt we are using for the LLM is:
-{prompt}
-
-Here are the two pieces of generated text.
-
-A: `{response_a}`
-
-B: `{response_b}`
-
-Please simply respond 'A' or 'B' as to which of the texts above address our earlier objective more effectively. Do not add any additional explanations, thoughts, punctuation, or anything; simply write 'A' or 'B'."""
-
-        messages = [
-            {"role": "system",
-             "content": "You are an AI assistant helping with prompt engineering and model evaluation."},
-            {"role": "user", "content": prompt},
-        ]
-
-        response = self.model.complete_chat(messages, ['\n'])
-
-        # ChatGPT has a knack for adding "." to the end of the reply.
-        if len(response) == 2:
-            response = response[0]
-
-        choice = response_map[response]
-
-        return choice
+        pass

@@ -19,20 +19,7 @@ def isAcceptableLLMResponse(response_given, acceptable_options) -> bool:
     Returns:
         True if the response is 'acceptable', otherwise throws an LLMResponseException.
     """
-
-    compare_to = None
-    if isinstance(acceptable_options, str):
-        compare_to = [acceptable_options]
-    elif isinstance(acceptable_options, list):
-        compare_to = acceptable_options
-
-    if compare_to is None:
-        raise Exception("testLLMResponse() only accepts a list or string object for acceptable_options.")
-
-    if response_given not in acceptable_options:
-        raise LLMResponseException(response_given, compare_to)
-
-    return True
+    pass
 
 
 def isLLMCodeExecutable(llm_code: str) -> bool:
@@ -46,12 +33,7 @@ def isLLMCodeExecutable(llm_code: str) -> bool:
         True if the code is executable, otherwise throws an LLMCodeException.
 
     """
-    try:
-        exec(llm_code)
-    except Exception as e:
-        raise LLMCodeException(llm_code, e)
-
-    return True
+    pass
 
 
 def isProperlyStructuredChat(messages, force_roles=False) -> bool:
@@ -68,16 +50,7 @@ def isProperlyStructuredChat(messages, force_roles=False) -> bool:
         True if the messages are properly structured, otherwise False.
 
     """
-
-    for m in messages:
-        keys = m.keys()
-        if not (len(keys) == 2 and "role" in keys and "content" in keys):
-            return False
-        if force_roles:
-            role = m["role"]
-            if role not in ["system", "user", "assistant"]:
-                return False
-    return True
+    pass
 
 
 def reviewOutputWithLLM(text, requirements, llm):
@@ -92,22 +65,7 @@ def reviewOutputWithLLM(text, requirements, llm):
         True if the text meets the requirements, otherwise throws an LLMReviewException.
 
     """
-    prompt = ChatPrompt(
-        [{"role": "system",
-          "content": "Follow the user's instructions exactly, and only respond with YES or NO (with additional info)."},
-         {"role": "user",
-          "content": "I'm working with a large language model and hope you can confirm if the following text abides by "
-                     "a set of requirements I've provided. Here is the text:\n-----\n{output}\n-----\n\nBelow are the "
-                     "requirements the text above is supposed to meet.\n\n-----\n{requirements}\n-----\n\nDoes the "
-                     "text meet the requirements? Please only answer YES or NO. If NO, you can provide additional "
-                     "information on what the text is missing."}
-         ])
-
-    result = llm.complete_chat(prompt.fill(text=text, requirements=requirements))
-    if result == "YES":
-        return True
-    else:
-        raise LLMReviewException(result)
+    pass
 
 
 class LLMReviewException(Exception):

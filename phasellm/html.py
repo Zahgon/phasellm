@@ -87,10 +87,7 @@ def _formatContentToHtml(string) -> str:
         The HTML formatted string.
 
     """
-    new_string = re.sub("<", "&lt;", string)
-    new_string = re.sub(">", "&gt;", new_string)
-    new_string = re.sub("[\r\n]+", "<br>", new_string)
-    return new_string
+    pass
 
 
 def toHtmlFile(html, filepath) -> None:
@@ -102,22 +99,7 @@ def toHtmlFile(html, filepath) -> None:
         filepath: The path to save the HTML file to.
 
     """
-
-    html_content = f"""
-<!doctype html>
-<html lang="en">
-<head>
-<style>
-{style}
-</style>
-</head>
-<body>
-{html}
-</body>
-</html>
-    """
-    with open(filepath, "w") as w:
-        w.write(html_content)
+    pass
 
 
 def chatbotToJson(chatbot, order_field=None) -> str:
@@ -131,19 +113,7 @@ def chatbotToJson(chatbot, order_field=None) -> str:
     Returns:
         The JSON dictionary representing the mesages from the chatbot object.
     """
-
-    messages = chatbot.messages
-    json_to_return = []
-    ctr = 0
-
-    for m in messages:
-        new_m = m.copy()
-        if order_field is not None:
-            new_m[order_field] = ctr
-            ctr += 1
-        json_to_return.append(new_m)
-
-    return json_to_return
+    pass
 
 
 def chatbotToHtml(chatbot) -> str:
@@ -157,32 +127,4 @@ def chatbotToHtml(chatbot) -> str:
         The HTML representation of the chatbot message stack.
 
     """
-
-    chatbot_html = """<div class='phasellm_chatbot_stream'>
-<div class="legend">
-    <b>Legend</b><div class="legend_box content_system">&nbsp;</div> System <div class="legend_box content_assistant">&nbsp;</div> Assistant <div class="legend_box content_user">&nbsp;</div> User
-</div>"""
-
-    messages = chatbot.messages
-    for m in messages:
-        m_timestamp = ""
-        if "timestamp_utc" in m:
-            m_timestamp = m["timestamp_utc"].strftime("%d %B %Y at %H:%M:%S")
-
-        m_log_time_seconds_string = ""
-        if "log_time_seconds" in m:
-            m_log_time_seconds_string = f"""<div class='time_taken'>({str(round(m['log_time_seconds'], 3))} seconds)</div>"""
-
-        response_html = f"""
-<div class='response_container'>
-    <div class='response content_{m['role']}'>{_formatContentToHtml(m['content'])}</div>
-    <div class='timestamp'>{m_timestamp}</div>
-    {m_log_time_seconds_string}
-</div>
-"""
-
-        chatbot_html += response_html
-
-    chatbot_html += "\n</div>"
-
-    return chatbot_html
+    pass

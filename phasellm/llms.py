@@ -81,15 +81,7 @@ def _fill_variables(source: str, **kwargs: Any) -> str:
         The filled string.
 
     """
-    # Collect the variables present in the source that need to be filled.
-    variables = re.findall(variable_regex, source)
-    # Create a copy of the source to be filled.
-    filled = source
-    for m in variables:
-        keyword = m.replace("{", "").replace("}", "").strip()
-        if keyword in kwargs:
-            filled = filled.replace(m, kwargs[keyword])
-    return filled
+    pass
 
 
 def _clean_messages_to_prompt(messages: List[Message]) -> str:
@@ -105,7 +97,7 @@ def _clean_messages_to_prompt(messages: List[Message]) -> str:
         The messages as a String.
 
     """
-    return "\n".join([f"{str(m['role'])}: {str(m['content'])}" for m in messages])
+    pass
 
 
 def _truncate_completion(completion: str) -> str:
@@ -119,10 +111,7 @@ def _truncate_completion(completion: str) -> str:
         The truncated completion.
 
     """
-    newline_location = completion.find("\n")
-    if newline_location > 0:
-        completion = completion[:newline_location]
-    return completion
+    pass
 
 
 def _remove_prompt_from_completion(prompt: str, completion: str) -> str:
@@ -137,9 +126,7 @@ def _remove_prompt_from_completion(prompt: str, completion: str) -> str:
         The completion without the prompt.
 
     """
-    if not completion.startswith(prompt):
-        return completion
-    return completion[len(prompt) :]
+    pass
 
 
 def _get_stop_sequences_from_messages(messages: List[Message]) -> List[str]:
@@ -154,10 +141,7 @@ def _get_stop_sequences_from_messages(messages: List[Message]) -> List[str]:
         A list of stop sequences.
 
     """
-    roles = set()
-    for m in messages:
-        roles.add(m["role"])
-    return [f"\n{r}:" for r in roles]
+    pass
 
 
 def _format_sse(content: str) -> str:
@@ -171,9 +155,7 @@ def _format_sse(content: str) -> str:
         The formatted content.
 
     """
-    # TODO consider adding id and event fields to the SSE.
-    content = content.replace("\n", "\ndata:")
-    return f"data: {content}\n\n"
+    pass
 
 
 def _conditional_format_sse_response(content: str, format_sse: bool) -> str:
@@ -188,9 +170,7 @@ def _conditional_format_sse_response(content: str, format_sse: bool) -> str:
         The formatted content.
 
     """
-    if format_sse:
-        return _format_sse(content)
-    return content
+    pass
 
 
 def swap_roles(messages: List[Message], new_prompt: str) -> List[Message]:
@@ -206,17 +186,7 @@ def swap_roles(messages: List[Message], new_prompt: str) -> List[Message]:
         A new list of messages with the new_prompt as the system prompt and user/assistant prompts swapped out.
 
     """
-    new_messages = [{"role": "system", "content": new_prompt}]
-    for m in messages:
-        if m["role"] in ["user", "assistant"]:
-            new_message = m.copy()
-            if m["role"] == "user":
-                new_role = "assistant"
-            elif m["role"] == "assistant":
-                new_role = "user"
-            new_message["role"] = new_role
-            new_messages.append(new_message)
-    return new_messages
+    pass
 
 
 class LanguageModelWrapper(ABC):
@@ -251,7 +221,7 @@ class LanguageModelWrapper(ABC):
         Returns:
             A dictionary containing the last response header.
         """
-        return self._last_response_header
+        pass
 
     @last_response_header.setter
     def last_response_header(self, header: dict) -> None:
@@ -261,7 +231,7 @@ class LanguageModelWrapper(ABC):
         Returns:
 
         """
-        self._last_response_header = header
+        pass
 
     @abstractmethod
     def complete_chat(
@@ -322,23 +292,7 @@ class LanguageModelWrapper(ABC):
             The prepared prompt.
 
         """
-        # Convert the messages to a prompt.
-        prompt_text = _clean_messages_to_prompt(messages)
-
-        # Prepend the role, if provided.
-        if prepend_role:
-            prompt_text = f"\n\n{prepend_role}: {prompt_text}"
-
-        # Add the preamble, if requested.
-        if include_preamble:
-            prompt_text = self.chat_completion_preamble + prompt_text
-
-        # Append the role, if provided.
-        if append_role:
-            prompt_text = f"{prompt_text}\n\n{append_role}:"
-
-        # Remove whitespace from before and after prompt.
-        return prompt_text.strip()
+        pass
 
     @staticmethod
     def prep_prompt(
@@ -358,16 +312,7 @@ class LanguageModelWrapper(ABC):
             The prepared prompt.
 
         """
-        # Prepend the role, if provided.
-        if prepend_role:
-            prompt = f"{prepend_role}: {prompt}"
-
-        # Append the role, if provided.
-        if append_role:
-            prompt = f"{prompt}\n\n{append_role}:"
-
-        # Remove whitespace from before and after prompt.
-        return prompt.strip()
+        pass
 
     def _prep_common_kwargs(self, api_config: Optional[OPENAI_API_CONFIG] = None):
         """
@@ -377,20 +322,7 @@ class LanguageModelWrapper(ABC):
             The kwargs to pass to the API.
 
         """
-        # Get the base kwargs for the given config.
-        if api_config is not None:
-            kwargs = api_config.get_base_api_kwargs()
-        else:
-            kwargs = {}
-
-        # Add the wrapper's kwargs.
-        kwargs = {**self.kwargs, **kwargs}
-
-        # Add the temperature if it exists.
-        if self.temperature is not None:
-            kwargs["temperature"] = self.temperature
-
-        return kwargs
+        pass
 
 
 class StreamingLanguageModelWrapper(LanguageModelWrapper):
@@ -449,7 +381,7 @@ class ChatPrompt:
             The string representation of the chat prompt.
 
         """
-        return _clean_messages_to_prompt(self.messages)
+        pass
 
     def fill(self, **kwargs) -> List[Message]:
         """
@@ -462,15 +394,7 @@ class ChatPrompt:
             The filled chat prompt.
 
         """
-        filled_messages = []
-        for i in range(0, len(self.messages)):
-            new_role = _fill_variables(self.messages[i]["role"], **kwargs)
-            new_content = _fill_variables(self.messages[i]["content"], **kwargs)
-            new_message = self.messages[i].copy()
-            new_message["role"] = new_role
-            new_message["content"] = new_content
-            filled_messages.append(new_message)
-        return filled_messages
+        pass
 
 
 class Prompt:
@@ -502,7 +426,7 @@ class Prompt:
             The raw prompt command.
 
         """
-        return self.prompt
+        pass
 
     def fill(self, **kwargs: Any) -> str:
         """
@@ -515,7 +439,7 @@ class Prompt:
             The filled prompt.
 
         """
-        return _fill_variables(source=self.prompt, **kwargs)
+        pass
 
 
 class HuggingFaceInferenceWrapper(LanguageModelWrapper):
@@ -556,20 +480,7 @@ class HuggingFaceInferenceWrapper(LanguageModelWrapper):
             The response from the Hugging Face Inference API.
 
         """
-        # https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
-        headers = {"Authorization": f"Bearer {self.apikey}"}
-        payload = {"inputs": prompt, **self.kwargs}
-        if self.temperature is not None:
-            payload["temperature"] = self.temperature
-
-        response = requests.post(self.model_url, headers=headers, json=payload)
-
-        self.last_response_header = response.headers
-
-        response_json = response.json()
-        return _remove_prompt_from_completion(
-            prompt=prompt, completion=response_json[0]["generated_text"]
-        )
+        pass
 
     def complete_chat(
         self, messages: List[Message], append_role: str = None, prepend_role: str = None
@@ -586,19 +497,7 @@ class HuggingFaceInferenceWrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-
-        prompt = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=True,
-        )
-
-        res = self._call_model(prompt=prompt)
-
-        # TODO consider making this more robust by truncating at first "role" using _get_stop_sequences_from_messages
-        # Truncate the completion to the first new line since this model tends to pretend to be the user.
-        return _truncate_completion(res)
+        pass
 
     def text_completion(self, prompt: str) -> str:
         """
@@ -611,7 +510,7 @@ class HuggingFaceInferenceWrapper(LanguageModelWrapper):
             The text completion.
 
         """
-        return self._call_model(prompt=prompt)
+        pass
 
 
 # TODO consider deleting the BloomWrapper class since this functionality is in HuggingFaceInferenceWrapper
@@ -646,20 +545,7 @@ class BloomWrapper(LanguageModelWrapper):
             The response from the Hugging Face Inference API.
 
         """
-        # https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
-        headers = {"Authorization": f"Bearer {self.apikey}"}
-        payload = {"inputs": prompt, **self.kwargs}
-        if self.temperature is not None:
-            payload["temperature"] = self.temperature
-
-        response = requests.post(self.API_URL, headers=headers, json=payload)
-
-        self.last_response_header = response.headers
-
-        response_json = response.json()
-        return _remove_prompt_from_completion(
-            prompt=prompt, completion=response_json[0]["generated_text"]
-        )
+        pass
 
     def complete_chat(
         self, messages: List[Message], append_role: str = None, prepend_role: str = None
@@ -676,19 +562,7 @@ class BloomWrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-
-        prompt = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=True,
-        )
-
-        res = self._call_model(prompt=prompt)
-
-        # TODO consider making this more robust by truncating at first "role" using _get_stop_sequences_from_messages
-        # Truncate the completion to the first new line since this model tends to pretend to be the user.
-        return _truncate_completion(res)
+        pass
 
     def text_completion(self, prompt: str) -> str:
         """
@@ -701,7 +575,7 @@ class BloomWrapper(LanguageModelWrapper):
             The text completion.
 
         """
-        return self._call_model(prompt=prompt)
+        pass
 
 
 class StreamingOpenAIGPTWrapper(StreamingLanguageModelWrapper):
@@ -817,26 +691,7 @@ class StreamingOpenAIGPTWrapper(StreamingLanguageModelWrapper):
             Text generator
 
         """
-        for chunk in response:
-            text = None
-            if not chunk.choices:
-                text = ""
-            elif hasattr(chunk.choices[0], "text"):
-                text = chunk.choices[0].text
-            elif hasattr(chunk.choices[0], "delta") and hasattr(
-                chunk.choices[0].delta, "text"
-            ):
-                text = chunk.choices[0].delta.text
-            elif hasattr(chunk.choices[0], "delta") and hasattr(
-                chunk.choices[0].delta, "content"
-            ):
-                text = chunk.choices[0].delta.content
-            if text:
-                yield _conditional_format_sse_response(
-                    content=text, format_sse=self.format_sse
-                )
-        if self.format_sse and self.append_stop_token:
-            yield _format_sse(content=self.stop_token)
+        pass
 
     def complete_chat(
         self, messages: List[Message], append_role: str = None, prepend_role: str = None
@@ -858,25 +713,7 @@ class StreamingOpenAIGPTWrapper(StreamingLanguageModelWrapper):
             The chat completion generator.
 
         """
-
-        kwargs = self._prep_common_kwargs(self.api_config)
-        kwargs["stream"] = True
-
-        if ("gpt-4" in self.api_config.model) or ("gpt-3.5" in self.api_config.model) or ("deepseek" in self.api_config.model):
-            kwargs["messages"] = messages
-            response = self.api_config.client.chat.completions.create(**kwargs)
-            yield from self._yield_response(response)
-        else:
-            prompt_text = self.prep_prompt_from_messages(
-                messages=messages,
-                prepend_role=prepend_role,
-                append_role=append_role,
-                include_preamble=False,
-            )
-            kwargs["prompt"] = prompt_text
-            kwargs["stop"] = _get_stop_sequences_from_messages(messages)
-            response = self.api_config.client.completions.create(**kwargs)
-            yield from self._yield_response(response)
+        pass
 
     # TODO Consider error handling for chat models.
     def text_completion(
@@ -895,16 +732,7 @@ class StreamingOpenAIGPTWrapper(StreamingLanguageModelWrapper):
             The text completion generator.
 
         """
-        kwargs = self._prep_common_kwargs(self.api_config)
-
-        kwargs = {"prompt": prompt, "stream": True, **kwargs}
-
-        if stop_sequences:
-            kwargs["stop"] = stop_sequences
-
-        response = self.api_config.client.completions.create(**kwargs)
-
-        yield from self._yield_response(response)
+        pass
 
     def _set_last_response_header(self, response: httpx.Response) -> None:
         """
@@ -917,7 +745,7 @@ class StreamingOpenAIGPTWrapper(StreamingLanguageModelWrapper):
             None
 
         """
-        self.last_response_header = response.headers
+        pass
 
 
 class OpenAIGPTWrapper(LanguageModelWrapper):
@@ -1031,22 +859,7 @@ class OpenAIGPTWrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-        kwargs = self._prep_common_kwargs(self.api_config)
-
-        if ("gpt-4" in self.api_config.model) or ("gpt-3.5" in self.api_config.model) or ("deepseek" in self.api_config.model):
-            kwargs["messages"] = messages
-            response = self.api_config.client.chat.completions.create(**kwargs)
-            return response.choices[0].message.content
-        else:
-            prompt_text = self.prep_prompt_from_messages(
-                messages=messages,
-                prepend_role=prepend_role,
-                append_role=append_role,
-                include_preamble=False,
-            )
-            kwargs["prompt"] = prompt_text
-            response = self.api_config.client.completions.create(**kwargs)
-            return response.choices[0].text
+        pass
 
     # TODO Consider error handling for chat models.
     def text_completion(self, prompt: str, stop_sequences: List[str] = None) -> str:
@@ -1061,17 +874,7 @@ class OpenAIGPTWrapper(LanguageModelWrapper):
             The text completion.
 
         """
-
-        kwargs = self._prep_common_kwargs(self.api_config)
-
-        kwargs["prompt"] = self.prep_prompt(prompt=prompt)
-
-        if stop_sequences:
-            kwargs["stop"] = stop_sequences
-
-        response = self.api_config.client.completions.create(**kwargs)
-
-        return response.choices[0].text
+        pass
 
     def _set_last_response_header(self, response: httpx.Response) -> None:
         """
@@ -1084,7 +887,7 @@ class OpenAIGPTWrapper(LanguageModelWrapper):
             None
 
         """
-        self.last_response_header = response.headers
+        pass
 
 
 class StreamingVertexAIWrapper(StreamingLanguageModelWrapper):
@@ -1192,66 +995,7 @@ class StreamingVertexAIWrapper(StreamingLanguageModelWrapper):
             The text completion generator.
 
         """
-        kwargs = extract_vertex_ai_kwargs(self.kwargs)
-
-        if isinstance(self.api_config.client, ChatModel):
-            # Note that we instantiate a chat session every time since PhaseLLM manages history with the ChatBot class.
-            chat_session = self.api_config.client.start_chat()
-            response = chat_session.send_message_streaming(
-                message=prompt,
-                max_output_tokens=kwargs["max_output_tokens"],
-                temperature=self.temperature,
-                top_k=kwargs["top_k"],
-                top_p=kwargs["top_p"],
-                stop_sequences=stop_sequences,
-            )
-        elif isinstance(self.api_config.client, TextGenerationModel):
-            if kwargs["max_output_tokens"]:
-                response = self.api_config.client.predict_streaming(
-                    prompt,
-                    temperature=self.temperature,
-                    stop_sequences=stop_sequences,
-                    max_output_tokens=kwargs["max_output_tokens"],
-                    top_p=kwargs["top_p"],
-                    top_k=kwargs["top_k"],
-                    logprobs=kwargs["logprobs"],
-                    presence_penalty=kwargs["presence_penalty"],
-                    frequency_penalty=kwargs["frequency_penalty"],
-                    logit_bias=kwargs["logit_bias"],
-                )
-            else:
-                response = self.api_config.client.predict_streaming(
-                    prompt,
-                    temperature=self.temperature,
-                    stop_sequences=stop_sequences,
-                    top_p=kwargs["top_p"],
-                    top_k=kwargs["top_k"],
-                    logprobs=kwargs["logprobs"],
-                    presence_penalty=kwargs["presence_penalty"],
-                    frequency_penalty=kwargs["frequency_penalty"],
-                    logit_bias=kwargs["logit_bias"],
-                )
-        else:
-            response = self.api_config.client.generate_content(
-                contents=prompt,
-                generation_config=GenerationConfig(
-                    temperature=self.temperature,
-                    stop_sequences=stop_sequences,
-                    top_p=kwargs["top_p"],
-                    top_k=kwargs["top_k"],
-                    candidate_count=kwargs["candidate_count"],
-                    max_output_tokens=kwargs["max_output_tokens"],
-                ),
-                stream=True,
-            )
-
-        for chunk in response:
-            self.last_response_header = extract_vertex_ai_response_metadata(chunk)
-            yield _conditional_format_sse_response(
-                content=chunk.text, format_sse=self.format_sse
-            )
-        if self.format_sse and self.append_stop_token:
-            yield _format_sse(content=self.stop_token)
+        pass
 
     def complete_chat(
         self, messages: List[Message], append_role: str = None, prepend_role: str = None
@@ -1268,17 +1012,7 @@ class StreamingVertexAIWrapper(StreamingLanguageModelWrapper):
             The chat completion generator.
 
         """
-        prompt_text = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=False,
-        )
-
-        return self._call_model(
-            prompt=prompt_text,
-            stop_sequences=_get_stop_sequences_from_messages(messages),
-        )
+        pass
 
     def text_completion(
         self, prompt: str, stop_sequences: List[str] = None
@@ -1296,7 +1030,7 @@ class StreamingVertexAIWrapper(StreamingLanguageModelWrapper):
             The text completion generator.
 
         """
-        return self._call_model(prompt=prompt, stop_sequences=stop_sequences)
+        pass
 
 
 class VertexAIWrapper(LanguageModelWrapper):
@@ -1392,62 +1126,7 @@ class VertexAIWrapper(LanguageModelWrapper):
             The text completion.
 
         """
-        kwargs = extract_vertex_ai_kwargs(self.kwargs)
-
-        if isinstance(self.api_config.client, ChatModel):
-            # Note that we instantiate a chat session every time since PhaseLLM manages history with the ChatBot class.
-            chat_session = self.api_config.client.start_chat()
-            response = chat_session.send_message(
-                message=prompt,
-                max_output_tokens=kwargs["max_output_tokens"],
-                temperature=self.temperature,
-                top_k=kwargs["top_k"],
-                top_p=kwargs["top_p"],
-                stop_sequences=stop_sequences,
-            )
-        elif isinstance(self.api_config.client, TextGenerationModel):
-            if kwargs["max_output_tokens"]:
-                response = self.api_config.client.predict(
-                    prompt,
-                    temperature=self.temperature,
-                    stop_sequences=stop_sequences,
-                    max_output_tokens=kwargs["max_output_tokens"],
-                    top_p=kwargs["top_p"],
-                    top_k=kwargs["top_k"],
-                    logprobs=kwargs["logprobs"],
-                    presence_penalty=kwargs["presence_penalty"],
-                    frequency_penalty=kwargs["frequency_penalty"],
-                    logit_bias=kwargs["logit_bias"],
-                )
-            else:
-                response = self.api_config.client.predict(
-                    prompt,
-                    temperature=self.temperature,
-                    stop_sequences=stop_sequences,
-                    top_p=kwargs["top_p"],
-                    top_k=kwargs["top_k"],
-                    logprobs=kwargs["logprobs"],
-                    presence_penalty=kwargs["presence_penalty"],
-                    frequency_penalty=kwargs["frequency_penalty"],
-                    logit_bias=kwargs["logit_bias"],
-                )
-        else:
-            response = self.api_config.client.generate_content(
-                contents=prompt,
-                generation_config=GenerationConfig(
-                    temperature=self.temperature,
-                    stop_sequences=stop_sequences,
-                    top_p=kwargs["top_p"],
-                    top_k=kwargs["top_k"],
-                    candidate_count=kwargs["candidate_count"],
-                    max_output_tokens=kwargs["max_output_tokens"],
-                ),
-                stream=False,
-            )
-
-        self.last_response_header = extract_vertex_ai_response_metadata(response)
-
-        return response.text
+        pass
 
     def complete_chat(
         self, messages: List[Message], append_role: str = None, prepend_role: str = None
@@ -1464,17 +1143,7 @@ class VertexAIWrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-        prompt_text = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=False,
-        )
-
-        return self._call_model(
-            prompt=prompt_text,
-            stop_sequences=_get_stop_sequences_from_messages(messages),
-        )
+        pass
 
     def text_completion(self, prompt: str, stop_sequences: List[str] = None) -> str:
         """
@@ -1488,7 +1157,7 @@ class VertexAIWrapper(LanguageModelWrapper):
             The text completion.
 
         """
-        return self._call_model(prompt=prompt, stop_sequences=stop_sequences)
+        pass
 
 
 class StreamingClaudeWrapper(StreamingLanguageModelWrapper):
@@ -1549,52 +1218,7 @@ class StreamingClaudeWrapper(StreamingLanguageModelWrapper):
             The text completion generator.
 
         """
-        # https://docs.anthropic.com/claude/reference/complete_post
-        headers = {
-            "X-API-Key": self.apikey,
-            "Accept": "text/event-stream",
-            "anthropic-version": self.anthropic_version,
-        }
-
-        kwargs = self._prep_common_kwargs()
-
-        kwargs = {
-            "prompt": prompt,
-            "model": self.model,
-            "max_tokens_to_sample": 500,
-            "stop_sequences": stop_sequences,
-            "stream": True,
-            **kwargs,
-        }
-
-        resp = requests.post(self.API_URL, headers=headers, json=kwargs, stream=True)
-
-        self.last_response_header = resp.headers
-
-        client = SSEClient(resp)
-
-        strip_index = 0
-        for event in client.events():
-            if event.data and event.data != "[DONE]":
-                # Load the data as JSON
-                data = json.loads(event.data)
-
-                # Extract the completion if it is present.
-                completion = ""
-                if "completion" in data:
-                    completion = data["completion"]
-
-                # Anthropic's old API returns completions inclusive of previous chunks, so we need to strip them out.
-                if self.anthropic_version == "2023-01-01":
-                    completion = completion[strip_index:]
-                    strip_index += len(completion)
-
-                # If format_sse is True, we need to yield with SSE formatting.
-                yield _conditional_format_sse_response(
-                    content=completion, format_sse=self.format_sse
-                )
-        if self.format_sse and self.append_stop_token:
-            yield _format_sse(content=self.stop_token)
+        pass
 
     def complete_chat(
         self,
@@ -1615,24 +1239,7 @@ class StreamingClaudeWrapper(StreamingLanguageModelWrapper):
             The chat completion generator.
 
         """
-        if prepend_role != "Human":
-            warn("ClaudeWrapper only supports Human as the prepend_role. Ignoring.")
-            prepend_role = "Human"
-        if append_role != "Assistant":
-            warn("ClaudeWrapper only supports Assistant as the append_role. Ignoring.")
-            append_role = "Assistant"
-
-        prompt_text = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=False,
-        )
-
-        return self._call_model(
-            prompt=prompt_text,
-            stop_sequences=_get_stop_sequences_from_messages(messages),
-        )
+        pass
 
     def text_completion(
         self, prompt: str, stop_sequences: List[str] = None
@@ -1650,15 +1257,7 @@ class StreamingClaudeWrapper(StreamingLanguageModelWrapper):
             The text completion generator.
 
         """
-
-        if stop_sequences is None:
-            stop_sequences = []
-
-        prompt = self.prep_prompt(
-            prompt=prompt, prepend_role="Human", append_role="Assistant"
-        )
-
-        return self._call_model(prompt=prompt, stop_sequences=stop_sequences)
+        pass
 
 
 class ClaudeMessagesWrapper(LanguageModelWrapper):
@@ -1695,31 +1294,7 @@ class ClaudeMessagesWrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-
-        system_prompt = None
-        new_messages = []
-        for i, m in enumerate(messages):
-            if i == 0 and m["role"].lower() == "system":
-                system_prompt = m["content"]
-            else:
-                new_message = m
-                if m["role"].lower() == "system":
-                    new_message["role"] = "User"
-                new_messages.append(new_message)
-
-        client = anthropic.Anthropic(api_key=self.apikey)
-        if system_prompt is not None:
-            message = client.messages.create(
-                model=self.model,
-                system=system_prompt,
-                messages=new_messages,
-                max_tokens=self.max_tokens,
-            )
-        else:
-            message = client.messages.create(
-                model=self.model, messages=new_messages, max_tokens=self.max_tokens
-            )
-        return message.content[0].text
+        pass
 
     def text_completion(self, prompt: str, stop_sequences: List[str] = None) -> str:
         """
@@ -1794,48 +1369,7 @@ class StreamingClaudeMessagesWrapper(StreamingLanguageModelWrapper):
             The text completion generator.
 
         """
-
-        new_messages = []
-        system_prompt = None
-        for i, m in enumerate(messages):
-            if i == 0 and m["role"].lower() == "system":
-                system_prompt = m["content"]
-            else:
-                new_message = m
-                if m["role"].lower() == "system":
-                    new_message["role"] = "User"
-                new_messages.append(new_message)
-
-        client = anthropic.Anthropic(api_key=self.apikey)
-        if system_prompt is None:
-            with client.messages.stream(
-                max_tokens=self.max_tokens, messages=new_messages, model=self.model
-            ) as stream:
-                for response in stream:
-                    if isinstance(response, anthropic.types.RawContentBlockDeltaEvent):
-                        yield _conditional_format_sse_response(
-                            response.delta.text, self.format_sse
-                        )
-                    if isinstance(response, anthropic.types.MessageStopEvent):
-                        yield _conditional_format_sse_response(
-                            self.stop_token, self.format_sse
-                        )
-        else:
-            with client.messages.stream(
-                max_tokens=self.max_tokens,
-                messages=new_messages,
-                model=self.model,
-                system=system_prompt,
-            ) as stream:
-                for response in stream:
-                    if isinstance(response, anthropic.types.RawContentBlockDeltaEvent):
-                        yield _conditional_format_sse_response(
-                            response.delta.text, self.format_sse
-                        )
-                    if isinstance(response, anthropic.types.MessageStopEvent):
-                        yield _conditional_format_sse_response(
-                            self.stop_token, self.format_sse
-                        )
+        pass
 
     def complete_chat(
         self,
@@ -1856,19 +1390,7 @@ class StreamingClaudeMessagesWrapper(StreamingLanguageModelWrapper):
             The chat completion generator.
 
         """
-
-        new_messages = []
-        system_prompt = None
-        for i, m in enumerate(messages):
-            if i == 0 and m["role"].lower() == "system":
-                system_prompt = m["content"]
-            else:
-                new_message = m
-                if m["role"].lower() == "system":
-                    new_message["role"] = "User"
-                new_messages.append(new_message)
-
-        yield from self._call_model(messages=new_messages, system_prompt=system_prompt)
+        pass
 
     def text_completion(
         self, prompt: str, stop_sequences: List[str] = None
@@ -1938,31 +1460,7 @@ class ClaudeWrapper(LanguageModelWrapper):
             The completion.
 
         """
-        # https://docs.anthropic.com/claude/reference/complete_post
-        headers = {
-            "X-API-Key": self.apikey,
-            "Accept": "application/json",
-            "anthropic-version": self.anthropic_version,
-        }
-
-        kwargs = self._prep_common_kwargs()
-
-        kwargs = {
-            "prompt": prompt,
-            "model": self.model,
-            "max_tokens_to_sample": 500,
-            "stop_sequences": _get_stop_sequences_from_messages(messages),
-            **kwargs,
-        }
-
-        resp = requests.post(
-            "https://api.anthropic.com/v1/complete", headers=headers, json=kwargs
-        )
-
-        self.last_response_header = resp.headers
-
-        # print(resp.text)
-        return json.loads(resp.text)["completion"].strip()
+        pass
 
     def complete_chat(
         self,
@@ -1983,21 +1481,7 @@ class ClaudeWrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-        if prepend_role != "Human":
-            warn("ClaudeWrapper only supports Human as the prepend_role. Ignoring.")
-            prepend_role = "Human"
-        if append_role != "Assistant":
-            warn("ClaudeWrapper only supports Assistant as the append_role. Ignoring.")
-            append_role = "Assistant"
-
-        prompt_text = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=False,
-        )
-
-        return self._call_model(prompt_text, messages)
+        pass
 
     def text_completion(self, prompt: str, stop_sequences: List[str] = None) -> str:
         """
@@ -2011,15 +1495,7 @@ class ClaudeWrapper(LanguageModelWrapper):
             The text completion.
 
         """
-
-        if stop_sequences is None:
-            stop_sequences = []
-
-        prompt = self.prep_prompt(
-            prompt=prompt, prepend_role="Human", append_role="Assistant"
-        )
-
-        return self._call_model(prompt, stop_sequences)
+        pass
 
 
 # TODO Might want to add stop sequences (new lines, roles) to make this better.
@@ -2059,19 +1535,7 @@ class GPT2Wrapper(LanguageModelWrapper):
             The completion.
 
         """
-        kwargs = self._prep_common_kwargs()
-
-        # https://huggingface.co/docs/transformers/v4.30.0/en/main_classes/text_generation#transformers.GenerationConfig
-        kwargs = {
-            "text_inputs": prompt,
-            "max_length": max_length,
-            "num_return_sequences": 1,
-            **kwargs,
-        }
-
-        res = self.pipeline(**kwargs)
-
-        return _remove_prompt_from_completion(prompt, res[0]["generated_text"])
+        pass
 
     def complete_chat(
         self,
@@ -2093,14 +1557,7 @@ class GPT2Wrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-
-        prompt = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=True,
-        )
-        return self._call_model(prompt=prompt, max_length=max_length)
+        pass
 
     def text_completion(self, prompt: str, max_length: int = 200) -> str:
         """
@@ -2114,9 +1571,7 @@ class GPT2Wrapper(LanguageModelWrapper):
             The text completion.
 
         """
-        prompt = self.prep_prompt(prompt=prompt)
-
-        return self._call_model(prompt=prompt, max_length=max_length)
+        pass
 
 
 class DollyWrapper(LanguageModelWrapper):
@@ -2161,13 +1616,7 @@ class DollyWrapper(LanguageModelWrapper):
             The completion.
 
         """
-        kwargs = self._prep_common_kwargs()
-
-        kwargs = {"inputs": prompt, "num_return_sequences": 1, **kwargs}
-
-        res = self.pipeline(**kwargs)
-
-        return _remove_prompt_from_completion(prompt, res[0]["generated_text"])
+        pass
 
     def complete_chat(
         self, messages: List[Message], append_role: str = None, prepend_role: str = None
@@ -2184,14 +1633,7 @@ class DollyWrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-
-        prompt = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=True,
-        )
-        return self._call_model(prompt=prompt)
+        pass
 
     def text_completion(self, prompt: str) -> str:
         """
@@ -2204,9 +1646,7 @@ class DollyWrapper(LanguageModelWrapper):
             The text completion.
 
         """
-        prompt = self.prep_prompt(prompt=prompt)
-
-        return self._call_model(prompt=prompt)
+        pass
 
 
 class ReplicateLlama2Wrapper(LanguageModelWrapper):
@@ -2260,38 +1700,7 @@ class ReplicateLlama2Wrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-
-        msgs = messages.copy()
-
-        if len(msgs) >= 1:
-            if not msgs[0]["role"] == "system":
-                msgs.insert(
-                    0, {"role": "system", "content": self.base_system_chat_prompt}
-                )
-
-        if msgs[1]["role"].lower() == "assistant":
-            msgs.insert(1, {"role": "user", "content": self.first_user_message})
-
-        completion_prompt = f"""<s>[INST] <<SYS>>{msgs[0]['content']}<</SYS>>"""
-
-        # This means we only have a system prompt and user message, so we need to provide a completion example.
-        if len(msgs) == 2:
-            completion_prompt += """User: Hello! [/INST]
-Assistant: Greetings! How are you doing today?</s>"""
-
-        else:
-
-            completion_prompt += f"""User: {msgs[1]['content']} [/INST]
-Assistant: {msgs[2]['content']}</s>"""
-
-            # Doesn't actually run if len(msgs) == 2
-            for i in range(3, len(msgs) - 1, 2):
-                completion_prompt += f"""<s>[INST]User: {msgs[i]['content']} [/INST]
-    Assistant: {msgs[i+1]['content']}?</s>"""
-
-        completion_prompt += f"""<s>[INST]User: {messages[-1]['content']}[/INST]"""
-
-        return completion_prompt
+        pass
 
     def _clean_response(self, assistant_message: str) -> str:
         """
@@ -2304,10 +1713,7 @@ Assistant: {msgs[2]['content']}</s>"""
             The chat completion, cleaned up.
 
         """
-        am = assistant_message.strip()
-        if am.find("Assistant:") == 0:
-            am = am[10:].strip()
-        return am
+        pass
 
     def complete_chat(
         self, messages: List[Message], append_role: str = None, prepend_role: str = None
@@ -2322,36 +1728,7 @@ Assistant: {msgs[2]['content']}</s>"""
             The chat completion.
 
         """
-
-        if append_role is not None or prepend_role is not None:
-            warnings.warn(
-                "Warning: PhaseLLM's implementation of Llama 2 does not support changing roles. We will stick to 'user' and 'assistant' roles."
-            )
-
-        chat_prompt = self.build_chat_completion_prompt(messages)
-
-        client = replicate.Client(api_token=self.apikey)
-        output = client.run(
-            "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3",
-            input={
-                "debug": False,
-                "top_k": 50,
-                "top_p": 1,
-                "prompt": chat_prompt,
-                "temperature": 0.5,
-                "system_prompt": "",
-                "max_new_tokens": 1000,
-                "min_new_tokens": -1,
-                "stop_sequences": "</s>",
-            },
-        )
-
-        new_text = ""
-        for x in output:
-            new_text += x
-        new_text = self._clean_response(new_text)
-
-        return new_text
+        pass
 
     def text_completion(self, prompt: str, stop_sequences: List[str] = None) -> str:
         """
@@ -2365,32 +1742,7 @@ Assistant: {msgs[2]['content']}</s>"""
             The text completion.
 
         """
-
-        input_call = {
-            "debug": False,
-            "top_k": 50,
-            "top_p": 1,
-            "prompt": prompt,
-            "temperature": self.temperature,
-            "system_prompt": "",
-            "max_new_tokens": 1000,
-            "min_new_tokens": -1,
-        }
-
-        if stop_sequences is not None:
-            input_call["stop_sequences"] = ",".join(stop_sequences)
-
-        client = replicate.Client(api_token=self.apikey)
-        output = client.run(
-            "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3",
-            input=input_call,
-        )
-
-        new_text = ""
-        for x in output:
-            new_text += x
-
-        return new_text
+        pass
 
 
 class CohereWrapper(LanguageModelWrapper):
@@ -2431,19 +1783,7 @@ class CohereWrapper(LanguageModelWrapper):
             The completion.
 
         """
-        kwargs = self._prep_common_kwargs()
-
-        # https://docs.cohere.com/reference/generate
-        kwargs = {
-            "prompt": prompt,
-            "max_tokens": 300,
-            "stop_sequences": stop_sequences,
-            **kwargs,
-        }
-
-        response = self.co.generate(**kwargs)
-
-        return response.generations[0].text
+        pass
 
     def complete_chat(
         self, messages: List[Message], append_role: str = None, prepend_role: str = None
@@ -2460,21 +1800,7 @@ class CohereWrapper(LanguageModelWrapper):
             The chat completion.
 
         """
-
-        prompt_text = self.prep_prompt_from_messages(
-            messages=messages,
-            prepend_role=prepend_role,
-            append_role=append_role,
-            include_preamble=False,
-        )
-        stop_sequences = _get_stop_sequences_from_messages(messages)
-
-        res = self._call_model(prompt=prompt_text, stop_sequences=stop_sequences)
-
-        for s in stop_sequences:
-            res = res.replace(s, "").strip()
-
-        return res
+        pass
 
     def text_completion(self, prompt: str, stop_sequences: List[str] = None) -> str:
         """
@@ -2488,13 +1814,7 @@ class CohereWrapper(LanguageModelWrapper):
             The text completion.
 
         """
-
-        if stop_sequences is None:
-            stop_sequences = []
-
-        prompt = self.prep_prompt(prompt=prompt)
-
-        return self._call_model(prompt=prompt, stop_sequences=stop_sequences)
+        pass
 
 
 class ChatBot:
@@ -2533,10 +1853,7 @@ class ChatBot:
             The response.
 
         """
-        self.append_message(
-            "assistant", response, log_time_seconds=time.time() - start_time
-        )
-        return response
+        pass
 
     def _streaming_response(self, response: Generator, start_time: float) -> Generator:
         """
@@ -2553,13 +1870,7 @@ class ChatBot:
             The response.
 
         """
-        full_response = ""
-        for chunk in response:
-            full_response += chunk
-            yield chunk
-        self.append_message(
-            "assistant", full_response, log_time_seconds=time.time() - start_time
-        )
+        pass
 
     def append_message(
         self, role: str, message: str, log_time_seconds: float = None
@@ -2573,19 +1884,7 @@ class ChatBot:
             log_time_seconds: The time it took to generate the message. Defaults to None.
 
         """
-
-        # Create the message object.
-        append_me: EnhancedMessage = {
-            "role": role,
-            "content": message,
-            "timestamp_utc": datetime.now(),
-        }
-
-        # Save how long it took to generate the message, if provided.
-        if log_time_seconds is not None:
-            append_me["log_time_seconds"] = log_time_seconds
-
-        self.messages.append(append_me)
+        pass
 
     def resend(self) -> Optional[Union[str, Generator]]:
         """
@@ -2600,12 +1899,7 @@ class ChatBot:
             The response from the chatbot if the last message in the stack was from the user. Otherwise, None.
 
         """
-        # TODO consider if this is necessary, given the TODO suggestion in self.chat().
-        last_message = self.messages.pop()
-        if last_message["role"] == "user":
-            return self.chat(last_message["content"])
-        else:
-            self.messages.append(last_message)
+        pass
 
     def chat(self, message: str) -> Union[str, Generator]:
         """
@@ -2619,20 +1913,4 @@ class ChatBot:
             used.
 
         """
-        # TODO consider appending user message only after a successful call to self.llm.complete_chat().
-        self.append_message("user", message)
-        start_time = time.time()
-
-        clean_messages = (
-            []
-        )  # We remove fields that the ChatBot class specifically tracks.
-        for m in self.messages:
-            m_copy = {"role": m["role"], "content": m["content"]}
-            clean_messages.append(m_copy)
-
-        response = self.llm.complete_chat(clean_messages, append_role="Assistant")
-
-        if isinstance(response, Generator):
-            return self._streaming_response(response=response, start_time=start_time)
-        else:
-            return self._response(response=response, start_time=start_time)
+        pass

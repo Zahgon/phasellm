@@ -52,24 +52,7 @@ class FileLogger:
         Returns:
             The chat_id associated with the chat.
         """
-
-        file_content = ""
-        for ctr, m in enumerate(messages):
-            file_content += f"ROLE: {m['role']}\n{m['content']}\n\n"
-            if ctr < len(messages) - 1:
-                file_content += self.separator
-
-        if file_name is None:
-            if chat_id is not None:
-                file_name = chat_id + ".txt"
-            else:
-                chat_id = hashlib.md5(file_content.encode()).hexdigest()
-                file_name = chat_id + ".txt"
-
-        with open(self.folder_path + "/" + file_name, "w") as f:
-            f.write(file_content)
-
-        return chat_id
+        pass
 
     def logChatBot(
         self,
@@ -92,12 +75,7 @@ class FileLogger:
         Returns:
             The chat_id associated with the chat.
         """
-
-        message_array = []
-        for m in chatbot.messages:
-            new_m = {"role": m["role"], "content": m["content"]}
-            message_array.append(new_m)
-        return self.log(message_array, chat_id, title, source_id, file_name)
+        pass
 
 
 class PhaseLogger:
@@ -134,28 +112,7 @@ class PhaseLogger:
         Returns:
             The chat_id associated with the chat.
         """
-
-        save_url = _PHASELLM_EVALS_BASE_URL + "/save_chat"
-        headers = {
-            "Authorization": f"Bearer {self.apikey}",
-            "Content-Type": "application/json",
-        }
-        payload = {"messages": messages}
-        if chat_id is not None:
-            payload["chat_id"] = chat_id
-
-        if title is not None:
-            payload["title"] = title
-
-        if source_id is not None:
-            payload["source_id"] = source_id
-
-        response = requests.post(save_url, json=payload, headers=headers)
-        data = json.loads(response.text)
-        if data["status"] == "error":
-            raise Exception(f"PhaseLLM Evals: an error occured. {data['message']}")
-
-        return data["chat_id"]
+        pass
 
     def logChatBot(
         self,
@@ -176,8 +133,4 @@ class PhaseLogger:
         Returns:
             The chat_id associated with the chat.
         """
-        message_array = []
-        for m in chatbot.messages:
-            new_m = {"role": m["role"], "content": m["content"]}
-            message_array.append(new_m)
-        return self.log(message_array, chat_id, title, source_id)
+        pass
